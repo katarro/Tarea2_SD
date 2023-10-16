@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Inscripción de Vendedores</title>
+</head>
+<body>
+    <h2>Formulario de Inscripción</h2>
+    <form action="/" method="post">
+        <label for="name">Nombre:</label><br>
+        <input type="text" id="name" name="name" required><br><br>
+
+        <label for="address">Dirección:</label><br>
+        <input type="text" id="address" name="address" required><br><br>
+
+        <label for="phone">Teléfono:</label><br>
+        <input type="tel" id="phone" name="phone" required><br><br>
+
+        <label for="type">Tipo de Inscripción:</label><br>
+        <select id="type" name="type">
+            <option value="normal">Normal</option>
+            <option value="paid">Paid</option>
+        </select><br><br>
+
+        <input type="submit" value="Enviar">
+    </form>
+</body>
+</html>
