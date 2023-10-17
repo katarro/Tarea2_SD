@@ -6,6 +6,7 @@ services:
       - '2181:2181'
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
+
   kafka1:
     image: 'bitnami/kafka:latest'
     ports:
@@ -16,6 +17,7 @@ services:
       - ALLOW_PLAINTEXT_LISTENER=yes
     depends_on:
       - zookeeper
+
   kafka2:
     image: 'bitnami/kafka:latest'
     ports:
@@ -26,6 +28,7 @@ services:
       - ALLOW_PLAINTEXT_LISTENER=yes
     depends_on:
       - zookeeper
+
   kafka3:
     image: 'bitnami/kafka:latest'
     ports:
@@ -36,3 +39,13 @@ services:
       - ALLOW_PLAINTEXT_LISTENER=yes
     depends_on:
       - zookeeper
+
+  web:
+    build: .
+    ports:
+      - "5001:5000"
+    depends_on:
+      - kafka1
+      - kafka2
+      - kafka3
+    restart: always
