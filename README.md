@@ -24,3 +24,5 @@
 2. kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic paid-topic --from-beginning
 
 
+## Abrir base de datos
+1. sudo docker exec -it "contenedor" psql -U mamochi mamochi

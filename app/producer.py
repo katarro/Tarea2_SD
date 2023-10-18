@@ -3,8 +3,10 @@ from flask import Flask, render_template, request
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 from kafka import KafkaProducer
+import psycopg2
 import json
 import os
+
 
 
 app = Flask(__name__)
@@ -24,16 +26,39 @@ def index():
         }
         
         # Determinar a qué tópico enviar basado en si el mensaje está marcado como "Paid"
-        topic = 'regular-topic'
+        topic = 'regular_topic'
         if data.get('type') == 'paid':
-            topic = 'paid-topic'
+            topic = 'paid_topic'
         
         producer.send(topic, value=data)
+
+        # Insertar en la base de datos
+        insert_into_db(data, topic)
 
         # Enviar correo electrónico con SendGrid
         message = send_email(data['email'], data['password'])
 
     return render_template('index.html', message=message)
+
+def insert_into_db(data, table_name):
+    try:
+        connection = psycopg2.connect(
+            dbname="mamochi",
+            user="mamochi",
+            password="mamochi",
+            host="db",
+            port="5432"
+        )
+        print(table_name == 'paid_topic')
+        cursor = connection.cursor()
+        insert_query = f"""INSERT INTO {table_name} (name, address, phone, type, password, email) VALUES (%s, %s, %s, %s, %s, %s)"""
+        cursor.execute(insert_query, (data['name'], data['address'], data['phone'], data['type'], data['password'], data['email']))
+        connection.commit()
+        cursor.close()
+        connection.close()
+    except Exception as e:
+        print(f"Error al insertar en la base de datos: {str(e)}")
+
 
 
 def send_email(recipient_email, password):

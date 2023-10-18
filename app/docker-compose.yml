@@ -51,3 +51,20 @@ services:
     env_file:
       - sendgrid.env
     restart: always
+
+  db:
+    image: postgres:latest
+    environment:
+        POSTGRES_USER: mamochi
+        POSTGRES_PASSWORD: mamochi
+        POSTGRES_DB: mamochi
+    ports:
+        - "5432:5432"
+    volumes:
+        - pgdata:/var/lib/postgresql/data
+        - ./create_database.sql:/docker-entrypoint-initdb.d/create_database.sql
+        - ./create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
+    restart: always
+    
+volumes:
+  pgdata:
