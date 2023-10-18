@@ -48,4 +48,6 @@ services:
       - kafka1
       - kafka2
       - kafka3
+    env_file:
+      - sendgrid.env
     restart: always

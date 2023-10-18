@@ -4,4 +4,5 @@ Jinja2==2.10.3
 MarkupSafe==1.1.1
 itsdangerous==1.1.0
 kafka-python==2.0.2
+sendgrid==6.9.2
 
