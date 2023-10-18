@@ -87,12 +87,12 @@ def send_email(recipient_email, password):
             <body>
                 <div class="container">
                     <div class="header">
-                        <img src="https://your-logo-url.com/logo.png" alt="Your Logo">  <!-- Replace with your logo URL -->
-                        <h2>Bienvenido a [Your Service Name]</h2>  <!-- Replace [Your Service Name] with your service's name -->
+                        <img src="https://www.tipicochileno.cl/wp-content/uploads/2018/01/receta-mote-con-huesillo-576X205.jpg" alt="Your Logo"> 
+                        <h2>Bienvenido a MAMOCHI</h2>  
                     </div>
                     <div class="content">
                         <p><strong>Hola,</strong></p>
-                        <p>Gracias por registrarte en [Your Service Name]. Aquí están tus credenciales:</p>
+                        <p>Gracias por registrarte en MAMOCHI. Aquí están tus credenciales:</p>
                         <div class="credentials">
                             <p><strong>Correo:</strong> {recipient_email}</p>
                             <p><strong>Contraseña:</strong> {password}</p>
@@ -105,7 +105,8 @@ def send_email(recipient_email, password):
                 </div>
             </body>
             </html>
-            ''')
+            '''
+        )
 
     try:
         sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
