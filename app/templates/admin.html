@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Panel de Administración</h1>
+    <h2>Regular Topic</h2>
+    <table>
+        <tr>
+            <th>Nombre</th>
+            <th>Dirección</th>
+            <th>Teléfono</th>
+            <th>Tipo</th>
+            <th>Email</th>
+        </tr>
+        {% for item in data['regular_topic'] %}
+        <tr>
+            <td>{{ item.name }}</td>
+            <td>{{ item.address }}</td>
+            <td>{{ item.phone }}</td>
+            <td>{{ item.type }}</td>
+            <td>{{ item.email }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <h2>Paid Topic</h2>
+    <table>
+        <tr>
+            <th>Nombre</th>
+            <th>Dirección</th>
+            <th>Teléfono</th>
+            <th>Tipo</th>
+            <th>Email</th>
+        </tr>
+        {% for item in data['paid_topic'] %}
+        <tr>
+            <td>{{ item.name }}</td>
+            <td>{{ item.address }}</td>
+            <td>{{ item.phone }}</td>
+            <td>{{ item.type }}</td>
+            <td>{{ item.email }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
