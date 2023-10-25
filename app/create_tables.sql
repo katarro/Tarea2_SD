@@ -18,41 +18,45 @@ CREATE TABLE paid_topic (
     email VARCHAR(255)
 );
 
-CREATE TABLE maestros (
+CREATE TABLE Maestros (
     id SERIAL PRIMARY KEY,
     nombre VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     tipo VARCHAR(50) CHECK (tipo IN ('normal', 'paid')),
+    aprobado BOOLEAN DEFAULT FALSE
 );
 
-CREATE TABLE ingredientes (
+CREATE TABLE Ingredientes (
     id SERIAL PRIMARY KEY,
     nombre VARCHAR(255) UNIQUE NOT NULL
 );
 
-CREATE TABLE stock_ingredientes (
+CREATE TABLE StockIngredientes (
     id_maestro INTEGER REFERENCES Maestros(id),
     id_ingrediente INTEGER REFERENCES Ingredientes(id),
     stock INTEGER CHECK (stock >= 0),
     PRIMARY KEY (id_maestro, id_ingrediente)
 );
 
-CREATE TABLE inscripciones (
+CREATE TABLE Inscripciones (
     id SERIAL PRIMARY KEY,
     id_maestro INTEGER REFERENCES Maestros(id),
     fecha DATE NOT NULL,
     estado VARCHAR(50) CHECK (estado IN ('pendiente', 'aprobada', 'rechazada'))
 );
 
-CREATE TABLE notificaciones_stock (
+
+CREATE TABLE NotificacionesStock (
     id SERIAL PRIMARY KEY,
-    id_stock_ingredientes INTEGER,
+    id_maestro INTEGER,
+    id_ingrediente INTEGER,
     fecha DATE NOT NULL,
     cantidad INTEGER CHECK (cantidad > 0),
-    FOREIGN KEY (id_stock_ingredientes) REFERENCES StockIngredientes(id_maestro, id_ingrediente)
+    FOREIGN KEY (id_maestro, id_ingrediente) REFERENCES StockIngredientes(id_maestro, id_ingrediente)
 );
 
-CREATE TABLE ventas (
+
+CREATE TABLE Ventas (
     id SERIAL PRIMARY KEY,
     id_maestro INTEGER REFERENCES Maestros(id),
     fecha DATE NOT NULL,
