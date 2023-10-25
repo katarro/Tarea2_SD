@@ -8,7 +8,7 @@ def register_maestro():
         'name': input("Nombre: "),
         'address': input("Dirección: "),
         'phone': input("Teléfono: "),
-        'type': input("Tipo (regular_topic/paid_topic): "),
+        'type': input("Tipo (normal/paid): "),
         'password': input("Contraseña: "),
         'email': input("Correo electrónico: ")
     }

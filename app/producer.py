@@ -76,7 +76,7 @@ def gestionar_stock_ingredientes():
         if choice == "1":
             funciones.agregar_stock()
         elif choice == "2":
-            funciones.reducir_stock()
+            funciones.reducir_Stock()
         elif choice == "3":
             funciones.ver_stock_ingredientes()
         elif choice == "4":

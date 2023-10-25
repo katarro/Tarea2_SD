@@ -13,18 +13,22 @@ CREATE TABLE paid_topic (
     name VARCHAR(255),
     address VARCHAR(255),
     phone VARCHAR(50),
-    type VARCHAR(50),
+    type VARCHAR(50) CHECK (type IN ('normal', 'paid')),
     password VARCHAR(255),
     email VARCHAR(255)
 );
 
 CREATE TABLE Maestros (
     id SERIAL PRIMARY KEY,
-    nombre VARCHAR(255) NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    tipo VARCHAR(50) CHECK (tipo IN ('normal', 'paid')),
+    name VARCHAR(255),
+    address VARCHAR(255),
+    phone VARCHAR(50),
+    type VARCHAR(50) CHECK (type IN ('normal', 'paid')),
+    password VARCHAR(255),
+    email VARCHAR(255),
     aprobado BOOLEAN DEFAULT FALSE
 );
+
 
 CREATE TABLE Ingredientes (
     id SERIAL PRIMARY KEY,
