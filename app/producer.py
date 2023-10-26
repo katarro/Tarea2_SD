@@ -69,17 +69,14 @@ def gestionar_maestros():
 def gestionar_stock_ingredientes():
     while True:
         print("\n1. Agregar Stock")
-        print("2. Reducir Stock")
-        print("3. Ver Stock de Ingredientes")
-        print("4. Salir")
+        print("2. Ver Stock de Ingredientes")
+        print("3. Salir")
         choice = input("Elige una opción: ")
         if choice == "1":
             funciones.agregar_stock()
         elif choice == "2":
-            funciones.reducir_Stock()
-        elif choice == "3":
             funciones.ver_stock_ingredientes()
-        elif choice == "4":
+        elif choice == "3":
             break
         else:
             print("Opción no válida, por favor elige una opción del 1 al 4.")

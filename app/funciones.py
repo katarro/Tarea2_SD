@@ -96,10 +96,6 @@ def rechazar_maestro():
         print("Ocurrió un error:", str(e))
 
 
-
-
-
-
 def ver_lista_maestros():
     try:
         connection = create_connection()
