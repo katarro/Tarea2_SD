@@ -125,10 +125,49 @@ def ver_lista_maestros():
 # Aquí puedes agregar las demás funciones según sea necesario
 
 def agregar_stock():
-    pass
+    connection = create_connection()
+    if connection is None:
+        return
+    cursor = connection.cursor()
 
-def reducir_Stock():
-    pass
+    try:
+        # Pedir la información al usuario
+        id_maestro = input("Ingresa el ID del maestro: ")
+        nombre_ingrediente = input("Ingresa el nombre del ingrediente: ")
+        cantidad = int(input("Ingresa la cantidad de stock a agregar: "))
+
+        # Verificar si el ingrediente existe
+        query = "SELECT id FROM Ingredientes WHERE nombre = %s"
+        cursor.execute(query, (nombre_ingrediente,))
+        resultado = cursor.fetchone()
+        if resultado is None:
+            print("El ingrediente no existe.")
+            return
+        id_ingrediente = resultado[0]
+
+        # Verificar si ya existe stock para ese maestro e ingrediente
+        query = "SELECT stock FROM StockIngredientes WHERE id_maestro = %s AND id_ingrediente = %s"
+        cursor.execute(query, (id_maestro, id_ingrediente))
+        resultado = cursor.fetchone()
+
+        if resultado is None:
+            # Si no existe, insertar el nuevo stock
+            query = "INSERT INTO StockIngredientes (id_maestro, id_ingrediente, stock) VALUES (%s, %s, %s)"
+            cursor.execute(query, (id_maestro, id_ingrediente, cantidad))
+        else:
+            # Si ya existe, actualizar el stock existente
+            query = "UPDATE StockIngredientes SET stock = stock + %s WHERE id_maestro = %s AND id_ingrediente = %s"
+            cursor.execute(query, (cantidad, id_maestro, id_ingrediente))
+
+        connection.commit()
+        print("Stock agregado con éxito.")
+
+    except Exception as e:
+        print("Ocurrió un error:", str(e))
+        connection.rollback()
+    finally:
+        cursor.close()
+        connection.close()
 
 def ver_stock_ingredientes():
     pass
