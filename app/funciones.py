@@ -103,19 +103,30 @@ def ver_lista_maestros():
             return
         cursor = connection.cursor()
         
-        print("\nMaestros en 'regular_topic':")
+        print("\nMaestros en regular_topic:")
         query = "SELECT * FROM regular_topic"
         cursor.execute(query)
         rows = cursor.fetchall()
         for row in rows:
             print(row)
         
-        print("\nMaestros en 'paid_topic':")
+        print("\nMaestros en paid_topic:")
         query = "SELECT * FROM paid_topic"
         cursor.execute(query)
         rows = cursor.fetchall()
         for row in rows:
             print(row)
+
+        print("\nMaestros aprobados:")
+        query = "SELECT * FROM Maestros WHERE aprobado = TRUE"
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        
+        if not rows:
+            print("No hay maestros aprobados.")
+        else:
+            for row in rows:
+                print(row)
         
         cursor.close()
         connection.close()
@@ -131,6 +142,18 @@ def agregar_stock():
     cursor = connection.cursor()
 
     try:
+
+        print("\nMaestros aprobados:")
+        query = "SELECT * FROM Maestros WHERE aprobado = TRUE"
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        
+        if not rows:
+            print("No hay maestros aprobados.")
+        else:
+            for row in rows:
+                print(row)
+
         # Pedir la información al usuario
         id_maestro = input("Ingresa el ID del maestro: ")
         nombre_ingrediente = input("Ingresa el nombre del ingrediente: ")
@@ -170,4 +193,36 @@ def agregar_stock():
         connection.close()
 
 def ver_stock_ingredientes():
-    pass
+    connection = create_connection()
+    if connection is None:
+        return
+    cursor = connection.cursor()
+
+    # Solicitar al usuario el nombre del postre
+    nombre_postre = input("Ingresa el nombre del postre: ")
+
+    try:
+        # Consultar el stock de ingredientes para el postre especificado
+        query = """
+        SELECT p.nombre as postre, i.nombre as ingrediente, ip.cantidad
+        FROM IngredientesPostre ip
+        JOIN Postres p ON ip.id_postre = p.id
+        JOIN Ingredientes i ON ip.id_ingrediente = i.id
+        WHERE p.nombre = %s;
+        """
+        cursor.execute(query, (nombre_postre,))
+        rows = cursor.fetchall()
+
+        if not rows:
+            print("No se encontraron ingredientes para el postre especificado.")
+        else:
+            print("\nStock de ingredientes para:", nombre_postre)
+            for row in rows:
+                print(f"{row[1]}: {row[2]} unidades")
+
+    except Exception as e:
+        print("Ocurrió un error al consultar el stock de ingredientes:", str(e))
+
+    finally:
+        cursor.close()
+        connection.close()

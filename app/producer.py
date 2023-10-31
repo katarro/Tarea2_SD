@@ -84,14 +84,24 @@ def gestionar_stock_ingredientes():
 
 def ver_ventas_maestros():
     connection = kafka_utils.connect_db()
+    if connection is None:
+        print("No se pudo conectar a la base de datos.")
+        return
+    
     cursor = connection.cursor()
     query = "SELECT * FROM ventas"
     cursor.execute(query)
     rows = cursor.fetchall()
-    for row in rows:
-        print(row)
+    
+    if not rows:
+        print("No hay ventas registradas.")
+    else:
+        for row in rows:
+            print(row)
+    
     cursor.close()
     connection.close()
+
 
 def menu():
     while True:
