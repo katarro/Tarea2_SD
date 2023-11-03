@@ -20,9 +20,9 @@
 0. kafka-topics.sh --delete --bootstrap-server kafka1:9092 --topic "nombre topico"
 
 ## Listar contenido de un Topico
-1. kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic regular-topic --from-beginning
-2. kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic paid-topic --from-beginning
+1. kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic regular_topic --from-beginning
+2. kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic paid_topic --from-beginning
 
 
 ## Abrir base de datos
-1. sudo docker exec -it "contenedor" psql -U mamochi mamochi
+1. sudo docker exec -it app_db_1 psql -U mamochi mamochi

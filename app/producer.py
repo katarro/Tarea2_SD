@@ -1,145 +1,129 @@
-from sendgrid.helpers.mail import Mail, From, To, Content, TemplateId
-from flask import Flask, render_template, request
-from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail
-from kafka import KafkaProducer
-import psycopg2
-import json
-import os
+import kafka_utils
+import funciones
+import db_utils
+import maestro_session
+
+def ver_datos_tabla(tabla):
+    connection = kafka_utils.connect_db()
+    cursor = connection.cursor()
+    query = f"SELECT * FROM {tabla}"
+    cursor.execute(query)
+    rows = cursor.fetchall()
+    for row in rows:
+        print(row)
+    cursor.close()
+    connection.close()
+
+def admin():
+    print("\nPanel de Administrador")
+
+    consumer = kafka_utils.create_consumer()
+
+    while True:
+        print("\n1. Ver mensajes del tópico 'regular_topic'")
+        print("2. Ver mensajes del tópico 'paid_topic'")
+        print("3. Gestionar Maestros")
+        print("4. Gestionar Stock de Ingredientes")
+        print("5. Ver Ventas de Maestros")
+        print("6. Salir")
+        choice = input("Elige una opción: ")
+
+        if choice == "1":
+            ver_datos_tabla('regular_topic')
+        elif choice == "2":
+            ver_datos_tabla('paid_topic')
+        elif choice == "3":
+            gestionar_maestros()
+        elif choice == "4":
+            gestionar_stock_ingredientes()
+        elif choice == "5":
+            ver_ventas_maestros()
+        elif choice == "6":
+            print("Saliendo del Panel de Administrador.")
+            break
+        else:
+            print("Opción no válida, por favor elige una opción del 1 al 6.")
+
+    consumer.close()
+    print("\nFin de la información de administrador")
+
+def gestionar_maestros():
+    while True:
+        print("\n1. Aprobar Maestro")
+        print("2. Rechazar Maestro")
+        print("3. Ver Lista de Maestros")
+        print("4. Salir")
+        choice = input("Elige una opción: ")
+        if choice == "1":
+            funciones.aprobar_maestro()
+        elif choice == "2":
+            funciones.rechazar_maestro()
+        elif choice == "3":
+            funciones.ver_lista_maestros()
+        elif choice == "4":
+            break
+        else:
+            print("Opción no válida, por favor elige una opción del 1 al 4.")
 
 
-
-app = Flask(__name__)
-producer = KafkaProducer(bootstrap_servers=['kafka1:9092', 'kafka2:9093', 'kafka3:9094'], value_serializer=lambda v: json.dumps(v).encode('utf-8'))
-
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    message = ""
-    if request.method == 'POST':
-        data = {
-            'name': request.form['name'],
-            'address': request.form['address'],
-            'phone': request.form['phone'],
-            'type': request.form['type'],
-            'password': request.form['password'],
-            'email': request.form['email']
-        }
-        
-        # Determinar a qué tópico enviar basado en si el mensaje está marcado como "Paid"
-        topic = 'regular_topic'
-        if data.get('type') == 'paid':
-            topic = 'paid_topic'
-        
-        producer.send(topic, value=data)
-
-        # Insertar en la base de datos
-        insert_into_db(data, topic)
-
-        # Enviar correo electrónico con SendGrid
-        message = send_email(data['email'], data['password'])
-
-    return render_template('index.html', message=message)
-
-def insert_into_db(data, table_name):
-    try:
-        connection = psycopg2.connect(
-            dbname="mamochi",
-            user="mamochi",
-            password="mamochi",
-            host="db",
-            port="5432"
-        )
-        print(table_name == 'paid_topic')
-        cursor = connection.cursor()
-        insert_query = f"""INSERT INTO {table_name} (name, address, phone, type, password, email) VALUES (%s, %s, %s, %s, %s, %s)"""
-        cursor.execute(insert_query, (data['name'], data['address'], data['phone'], data['type'], data['password'], data['email']))
-        connection.commit()
-        cursor.close()
-        connection.close()
-    except Exception as e:
-        print(f"Error al insertar en la base de datos: {str(e)}")
+def gestionar_stock_ingredientes():
+    while True:
+        print("\n1. Agregar Stock")
+        print("2. Ver Stock de Ingredientes")
+        print("3. Salir")
+        choice = input("Elige una opción: ")
+        if choice == "1":
+            funciones.agregar_stock()
+        elif choice == "2":
+            funciones.ver_stock_ingredientes()
+        elif choice == "3":
+            break
+        else:
+            print("Opción no válida, por favor elige una opción del 1 al 4.")
 
 
-
-def send_email(recipient_email, password):
-    message = Mail(
-        from_email='felipe.castro3@mail.udp.cl',
-        to_emails=recipient_email,
-        subject='Tus credenciales',
-        html_content = f'''
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <style>
-                    body {{
-                        font-family: Arial, sans-serif;
-                        background-color: #f4f4f4;
-                        margin: 0;
-                        padding: 0;
-                    }}
-                    .container {{
-                        max-width: 600px;
-                        margin: 50px auto;
-                        background-color: #fff;
-                        padding: 20px 30px;
-                        border-radius: 8px;
-                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-                    }}
-                    .header {{
-                        text-align: center;
-                        margin-bottom: 20px;
-                    }}
-                    .header img {{
-                        max-width: 150px;
-                    }}
-                    .content {{
-                        font-size: 16px;
-                        line-height: 1.5;
-                    }}
-                    .credentials {{
-                        background-color: #f9f9f9;
-                        padding: 10px 15px;
-                        border-radius: 5px;
-                        margin: 20px 0;
-                    }}
-                    .footer {{
-                        text-align: center;
-                        margin-top: 30px;
-                        color: #888;
-                    }}
-                </style>
-            </head>
-            <body>
-                <div class="container">
-                    <div class="header">
-                        <img src="https://www.tipicochileno.cl/wp-content/uploads/2018/01/receta-mote-con-huesillo-576X205.jpg" alt="Your Logo"> 
-                        <h2>Bienvenido a MAMOCHI</h2>  
-                    </div>
-                    <div class="content">
-                        <p><strong>Hola,</strong></p>
-                        <p>Gracias por registrarte en MAMOCHI. Aquí están tus credenciales:</p>
-                        <div class="credentials">
-                            <p><strong>Correo:</strong> {recipient_email}</p>
-                            <p><strong>Contraseña:</strong> {password}</p>
-                        </div>
-                        <p>Por favor, guarda esta información en un lugar seguro.</p>
-                    </div>
-                    <div class="footer">
-                        <p>Si tienes alguna pregunta, no dudes en <a href="mailto:support@your-service.com">contactarnos</a>.</p>  <!-- Replace with your support email -->
-                    </div>
-                </div>
-            </body>
-            </html>
-            '''
-        )
-
-    try:
-        sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
-        response = sg.send(message)
-        return f"Correo enviado con éxito. Código de respuesta: {response.status_code}"
-    except Exception as e:
-        return f"Error al enviar el correo: {str(e)}"
+def ver_ventas_maestros():
+    connection = kafka_utils.connect_db()
+    if connection is None:
+        print("No se pudo conectar a la base de datos.")
+        return
+    
+    cursor = connection.cursor()
+    query = "SELECT * FROM ventas"
+    cursor.execute(query)
+    rows = cursor.fetchall()
+    
+    if not rows:
+        print("No hay ventas registradas.")
+    else:
+        for row in rows:
+            print(row)
+    
+    cursor.close()
+    connection.close()
 
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+def menu():
+    while True:
+        print("\nBienvenido a Mamochi")
+        print("1. Registrarse como Maestro")
+        print("2. Iniciar Sesión")
+        print("3. Panel de Administrador")
+        print("4. Salir")
+        choice = input("Elige una opción: ")
+
+        if choice == "1":
+            db_utils.register_maestro()
+        elif choice == "2":
+            maestro_session.login()
+        elif choice == "3":
+            admin()
+        elif choice == "4":
+            print("Hasta luego!")
+            break
+        else:
+            print("Opción no válida, por favor elige una opción del 1 al 4.")
+
+
+if __name__ == "__main__":
+    menu()
